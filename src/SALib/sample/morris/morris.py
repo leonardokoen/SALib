@@ -3,6 +3,7 @@ from typing import Dict
 
 import numpy.random as rd
 import warnings
+import scipy.stats as ss
 
 from .local import LocalOptimisation
 from .brute import BruteForce
@@ -312,7 +313,9 @@ def _generate_x_star(num_params: int, num_levels: int) -> np.ndarray:
     bound = 1 - delta
     grid = np.linspace(0, bound, int(num_levels / 2))
 
-    x_star[0, :] = rd.choice(grid, num_params)
+    xU, xL = grid + (int(num_levels / 2) - 0.1), grid - (int(num_levels / 2)- 0.1) 
+    prob = ss.norm.cdf(xU, scale = 3) - ss.norm.cdf(xL, scale = 3)
+    x_star[0, :] = rd.choice(grid, num_params, p =  prob)
 
     return x_star
 
